@@ -48,8 +48,8 @@ const OTPForm = () => {
   return (
     <div className="position-relative">
       <div className="background-images">
-        <div className="position-relative vh-100 w-100">
-          <img src={bg1} alt="bg1" className="w-100 mh-100" />
+        <div className="position-relative w-100">
+          <img src={bg1} alt="bg1" className="w-100 mh-100 object-fit-fill" />
         </div>
       </div>
       <div className="max-w-md mx-auto p-6 h-100 rounded-xl shadow-md position-absolute top-0 mh-100 w-100 d-flex justify-content-start pt-120 align-items-center flex-column px-4">
