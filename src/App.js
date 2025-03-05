@@ -46,13 +46,13 @@ const OTPForm = () => {
   };
 
   return (
-    <div className="position-relative overflow-hidden">
+    <div className="position-relative">
       <div className="background-images">
         <div className="position-relative vh-100 w-100">
           <img src={bg1} alt="bg1" className="w-100 mh-100" />
         </div>
       </div>
-      <div className="max-w-md mx-auto p-6 h-100 rounded-xl shadow-md position-absolute top-0 mh-100 w-100 d-flex justify-content-start pt-120 align-items-center flex-column px-5">
+      <div className="max-w-md mx-auto p-6 h-100 rounded-xl shadow-md position-absolute top-0 mh-100 w-100 d-flex justify-content-start pt-120 align-items-center flex-column px-4">
         <img src={logo} alt="logo" className="w-60 h-auto object-contain" />
         <h2 className="text-center blinker-semibold color-gold heading mt-4 mb-3">
           Barkat-e-Behrouz
@@ -66,10 +66,10 @@ const OTPForm = () => {
           Welcome, Huzoor
         </h1>
         <p className="color-beige text-center blinker-regular text">
-          This Ramadan, your Behrouz dawat brings a chance to spread barkat
-          beyond your table. If you wish to spread the Barkat, please share your
-          contact details and we will donate a biryani on your behalf at no cost
-          to you. Make someone’s Iftar special!
+          This Ramadan, your Behrouz dawat is more than just a feast - it’s a
+          chance to make someone’s Iftar special. If you wish to spread the
+          barkat, share your contact details, and we will donate a biryani on
+          your behalf at no cost to you.
         </p>
         <form onSubmit={handleSubmit} className="w-100 position-relative">
           <div className="mb-4 position-relative">

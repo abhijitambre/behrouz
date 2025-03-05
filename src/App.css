@@ -107,8 +107,8 @@
   text-align: center;
 }
 .heading2 {
-  font-size: 42px;
-  line-height: 48px;
+  font-size: 40px;
+  line-height: 46px;
   letter-spacing: 0;
 }
 .heading3 {
@@ -117,7 +117,7 @@
   letter-spacing: 0;
 }
 .text {
-  font-size: 17px;
+  font-size: 16px;
   line-height: 20.4px;
   letter-spacing: 0;
 }
