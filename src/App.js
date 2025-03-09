@@ -4,6 +4,7 @@ import "./App.css";
 import { Modal } from "react-bootstrap";
 import { logo, bg1, strip, strip2, thank } from "./assets";
 import { saveDataToJson } from "./storage";
+import axios from "axios";
 
 const OTPForm = () => {
   const [name, setName] = useState("");
@@ -13,18 +14,35 @@ const OTPForm = () => {
   const [otpVerified, setOtpVerified] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     if (phone.length === 10) {
-      setShowOtpField(true);
-      alert("OTP sent to " + phone);
+      try {
+        await axios.post("http://localhost:3000/send-otp", {
+          name,
+          phoneNumber: phone,
+        });
+        setShowOtpField(true);
+        alert("OTP sent successfully");
+      } catch (error) {
+        alert("Error sending OTP: " + error.response?.data?.error);
+      }
     } else {
       alert("Please enter a valid 10-digit phone number");
     }
   };
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
     if (otp.length > 0) {
-      setOtpVerified(true);
+      try {
+        await axios.post("http://localhost:3000/verify-otp", {
+          phoneNumber: phone,
+          otp,
+        });
+        setOtpVerified(true);
+        alert("OTP verified successfully");
+      } catch (error) {
+        alert("Error verifying OTP: " + error.response?.data?.error);
+      }
     } else {
       alert("Please enter a valid OTP");
     }
@@ -36,7 +54,6 @@ const OTPForm = () => {
       alert("Please verify OTP before submitting");
       return;
     }
-
     const formData = {
       name,
       phone,
@@ -142,7 +159,7 @@ const OTPForm = () => {
             <img
               src={thank}
               alt="thank You"
-              className="w-80  h-auto object-contain my-1"
+              className="w-80 h-auto object-contain my-1"
             />
           </div>
           <h1 className="heading3 blinker-bold color-brown">
