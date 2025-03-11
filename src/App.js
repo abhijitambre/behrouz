@@ -5,6 +5,7 @@ import { Modal } from "react-bootstrap";
 import { logo, bg1, strip, strip2, thank } from "./assets";
 import { saveDataToJson } from "./storage";
 import axios from "axios";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const OTPForm = () => {
   const [name, setName] = useState("");
@@ -13,6 +14,7 @@ const OTPForm = () => {
   const [showOtpField, setShowOtpField] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
 
   const handleSendOtp = async () => {
     if (phone.length === 10) {
@@ -54,12 +56,21 @@ const OTPForm = () => {
       alert("Please verify OTP before submitting");
       return;
     }
-    const formData = {
-      name,
-      phone,
-    };
+    if (!captchaToken) {
+      alert("Please complete the reCAPTCHA verification");
+      return;
+    }
+
+    const formData = { name, phone };
     saveDataToJson(formData);
     setShowSuccessPopup(true);
+  };
+
+  const validateName = (value) => {
+    const regex = /^[a-zA-Z\s]{0,50}$/;
+    if (regex.test(value) || value === "") {
+      setName(value);
+    }
   };
 
   return (
@@ -93,7 +104,7 @@ const OTPForm = () => {
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => validateName(e.target.value)}
               className="w-100 px-3 py-2 input-text blinker-bold border rounded-lg bg-beige br-20 border-0"
               required
               placeholder="Name"
@@ -138,6 +149,13 @@ const OTPForm = () => {
               </button>
             </div>
           )}
+
+          <div className="mb-4 d-flex justify-content-center">
+            <ReCAPTCHA
+              sitekey="YOUR_GOOGLE_RECAPTCHA_SITE_KEY"
+              onChange={(token) => setCaptchaToken(token)}
+            />
+          </div>
 
           <button
             type="submit"
