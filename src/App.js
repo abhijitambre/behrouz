@@ -15,49 +15,76 @@ const OTPForm = () => {
   const [otpVerified, setOtpVerified] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [captchaToken, setCaptchaToken] = useState(null);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+
+  const validateName = (value) => {
+    const regex = /^[a-zA-Z\s]{0,50}$/;
+    if (regex.test(value) || value === "") {
+      setName(value.slice(0, 50)); // Limit to 50 characters
+    }
+  };
+
+  const validatePhone = (value) => {
+    const numericValue = value.replace(/\D/g, ""); // Remove non-numeric characters
+    setPhone(numericValue.slice(0, 10)); // Limit to 10 digits
+  };
 
   const handleSendOtp = async () => {
-    if (phone.length === 10) {
-      try {
-        await axios.post(
-          "https://abbie-c8b13266.serverless.boltic.app/send-otp",
-          {
-            name,
-            phoneNumber: phone,
-          }
-        );
-        setShowOtpField(true);
-        alert("OTP sent successfully");
-      } catch (error) {
-        alert("Error sending OTP: " + error.response?.data?.error);
-      }
-    } else {
+    if (phone.length !== 10) {
       alert("Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    setIsSendingOtp(true);
+    try {
+      await axios.post(
+        "https://abbie-c8b13266.serverless.boltic.app/send-otp",
+        {
+          name,
+          phoneNumber: phone,
+        }
+      );
+      setShowOtpField(true);
+      alert("OTP sent successfully");
+    } catch (error) {
+      alert(
+        "Error sending OTP: " + (error.response?.data?.error || error.message)
+      );
+    } finally {
+      setIsSendingOtp(false);
     }
   };
 
   const handleVerifyOtp = async () => {
-    if (otp.length > 0) {
-      try {
-        await axios.post(
-          "https://abbie-c8b13266.serverless.boltic.app/verify-otp",
-          {
-            phoneNumber: phone,
-            otp,
-          }
-        );
-        setOtpVerified(true);
-        alert("OTP verified successfully");
-      } catch (error) {
-        alert("Error verifying OTP: " + error.response?.data?.error);
-      }
-    } else {
+    if (otp.length === 0) {
       alert("Please enter a valid OTP");
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    try {
+      await axios.post(
+        "https://abbie-c8b13266.serverless.boltic.app/verify-otp",
+        {
+          phoneNumber: phone,
+          otp,
+        }
+      );
+      setOtpVerified(true);
+      alert("OTP verified successfully");
+    } catch (error) {
+      alert(
+        "Error verifying OTP: " + (error.response?.data?.error || error.message)
+      );
+    } finally {
+      setIsVerifyingOtp(false);
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!otpVerified) {
       alert("Please verify OTP before submitting");
       return;
@@ -67,18 +94,8 @@ const OTPForm = () => {
       return;
     }
 
-    const formData = { name, phone };
-    saveDataToJson(formData);
+    saveDataToJson({ name, phone });
     setShowSuccessPopup(true);
-  };
-
-  const validateName = (value) => {
-    const regex = /^[a-zA-Z\s]{0,50}$/;
-    if (regex.test(value) || value === "") {
-      if (value.length <= 50) {
-        setName(value);
-      }
-    }
   };
 
   return (
@@ -124,9 +141,8 @@ const OTPForm = () => {
             <input
               type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => validatePhone(e.target.value)}
               className="w-100 px-3 py-2 input-text blinker-bold border rounded-lg bg-beige br-20 border-0"
-              maxLength="10"
               required
               placeholder="Phone Number"
             />
@@ -134,8 +150,9 @@ const OTPForm = () => {
               type="button"
               onClick={handleSendOtp}
               className="position-absolute end-0 top-50 btn2 translate-middle-y me-2 bg-transparent blinker-bold btn-text border-0 text-black py-1 px-3"
+              disabled={isSendingOtp}
             >
-              Send OTP
+              {isSendingOtp ? "Sending..." : "Send OTP"}
             </button>
           </div>
 
@@ -152,17 +169,22 @@ const OTPForm = () => {
               <button
                 type="button"
                 onClick={handleVerifyOtp}
-                className="position-absolute end-0 top-50 translate-middle-y btn2  me-2 bg-transparent blinker-bold btn-text border-0 text-black py-1 px-3"
+                className="position-absolute end-0 top-50 translate-middle-y btn2 me-2 bg-transparent blinker-bold btn-text border-0 text-black py-1 px-3"
+                disabled={isVerifyingOtp}
               >
-                {otpVerified ? "OTP Verified" : "Verify OTP"}
+                {isVerifyingOtp
+                  ? "Verifying..."
+                  : otpVerified
+                  ? "OTP Verified"
+                  : "Verify OTP"}
               </button>
             </div>
           )}
 
           <div className="mb-4 d-flex justify-content-center">
             <ReCAPTCHA
-              sitekey="YOUR_GOOGLE_RECAPTCHA_SITE_KEY"
-              onChange={(token) => setCaptchaToken(token)}
+              sitekey="6Ld5WPEqAAAAAEu_Zkx52SAzu11vqd76KORrNFPk"
+              onChange={(token) => setCaptchaToken(token)} // ✅ Correct usage
             />
           </div>
 
@@ -182,13 +204,11 @@ const OTPForm = () => {
       >
         <Modal.Header closeButton></Modal.Header>
         <Modal.Body className="bg-beige br-20 text-center">
-          <div className="mt-neg60 text-center">
-            <img
-              src={thank}
-              alt="thank You"
-              className="w-80 h-auto object-contain my-1"
-            />
-          </div>
+          <img
+            src={thank}
+            alt="Thank You"
+            className="w-80 h-auto object-contain my-1"
+          />
           <h1 className="heading3 blinker-bold color-brown">
             Shukran, huzoor!
           </h1>
