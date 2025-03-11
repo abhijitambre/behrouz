@@ -19,10 +19,13 @@ const OTPForm = () => {
   const handleSendOtp = async () => {
     if (phone.length === 10) {
       try {
-        await axios.post("http://localhost:3000/send-otp", {
-          name,
-          phoneNumber: phone,
-        });
+        await axios.post(
+          "https://abbie-c8b13266.serverless.boltic.app/send-otp",
+          {
+            name,
+            phoneNumber: phone,
+          }
+        );
         setShowOtpField(true);
         alert("OTP sent successfully");
       } catch (error) {
@@ -36,10 +39,13 @@ const OTPForm = () => {
   const handleVerifyOtp = async () => {
     if (otp.length > 0) {
       try {
-        await axios.post("http://localhost:3000/verify-otp", {
-          phoneNumber: phone,
-          otp,
-        });
+        await axios.post(
+          "https://abbie-c8b13266.serverless.boltic.app/verify-otp",
+          {
+            phoneNumber: phone,
+            otp,
+          }
+        );
         setOtpVerified(true);
         alert("OTP verified successfully");
       } catch (error) {
@@ -69,7 +75,9 @@ const OTPForm = () => {
   const validateName = (value) => {
     const regex = /^[a-zA-Z\s]{0,50}$/;
     if (regex.test(value) || value === "") {
-      setName(value);
+      if (value.length <= 50) {
+        setName(value);
+      }
     }
   };
 
@@ -108,6 +116,7 @@ const OTPForm = () => {
               className="w-100 px-3 py-2 input-text blinker-bold border rounded-lg bg-beige br-20 border-0"
               required
               placeholder="Name"
+              maxLength="50"
             />
           </div>
 
